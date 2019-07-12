@@ -1,0 +1,21 @@
+{
+    "amptest": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-cli-test-amptest-20190712111449-authRole",
+            "UnauthRoleArn": "arn:aws:iam::822349073484:role/amplify-cli-test-amptest-20190712111449-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::822349073484:role/amplify-cli-test-amptest-20190712111449-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-cli-test-amptest-20190712111449-deployment",
+            "UnauthRoleName": "amplify-cli-test-amptest-20190712111449-unauthRole",
+            "StackName": "amplify-cli-test-amptest-20190712111449",
+            "StackId": "arn:aws:cloudformation:us-east-1:822349073484:stack/amplify-cli-test-amptest-20190712111449/ca57e880-a4b7-11e9-90fb-122d883fe268"
+        },
+        "categories": {
+            "auth": {
+                "amplifyclitestbaa59e28": {
+                    "hostedUIProviderCreds": "[]"
+                }
+            }
+        }
+    }
+}
