@@ -1,16 +1,66 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
-
+import { Auth, API, graphqlOperation } from 'aws-amplify'
+import { Connect } from 'aws-amplify-react'
+import uuid from 'uuid'
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { rhythm, scale } from "../utils/typography"
+import { listPostLikes, getPostlike } from '../graphql/queries'
+import { createPostLike, deletePostLike } from '../graphql/mutations'
 
 class BlogPostTemplate extends React.Component {
+  state = {
+    isLoggedIn: false, 
+    liked: null,
+    userData: null
+  }
+
+  componentDidMount = async () => {
+    const post = this.props.data.markdownRemark
+    const user = await Auth.currentAuthenticatedUser()
+    const { data } = await API.graphql(
+      graphqlOperation(
+        listPostLikes, {
+          filter: { postId: {eq: post.frontmatter.id}}
+        })
+    )
+    const like = data.listPostLikes.items[0]
+    this.setState({isLoggedIn: !!user, like, userData: user})
+  }
+  toggleLike = async () => {
+    const post = this.props.data.markdownRemark
+    if (this.state.like) {
+      await API.graphql(
+        graphqlOperation(deletePostLike, {
+          input: { 
+            id: this.state.like.id 
+          },
+        })
+      )
+      this.setState({like: null})
+    } else {
+      const like = {
+        postId: post.frontmatter.id, 
+        id: uuid(),
+      }
+      await API.graphql(
+        graphqlOperation(
+          createPostLike, {
+            input: like,
+          })
+      )
+      this.setState({ like })
+    }
+
+  }
+
   render() {
     const post = this.props.data.markdownRemark
     const siteTitle = this.props.data.site.siteMetadata.title
     const { previous, next } = this.props.pageContext
+    const { isLoggedIn, likesPost } = this.state
 
     return (
       <Layout location={this.props.location} title={siteTitle}>
@@ -18,6 +68,7 @@ class BlogPostTemplate extends React.Component {
           title={post.frontmatter.title}
           description={post.frontmatter.description || post.excerpt}
         />
+
         <h1
           style={{
             marginTop: rhythm(1),
@@ -26,6 +77,14 @@ class BlogPostTemplate extends React.Component {
         >
           {post.frontmatter.title}
         </h1>
+
+        {isLoggedIn && (
+          <div>
+            <button onClick={this.toggleLike}>
+              {this.state.like ? 'Unlike' : 'Like'}
+            </button>
+          </div>
+        )}
         <p
           style={{
             ...scale(-1 / 5),
@@ -71,6 +130,7 @@ class BlogPostTemplate extends React.Component {
     )
   }
 }
+
 
 export default BlogPostTemplate
 

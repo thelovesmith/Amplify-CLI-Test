@@ -1,5 +1,5 @@
 type PostLike @model @auth(rules: [{ allow: owner, ownerField: "userId"}]) {
   id: ID!
   postId: String!
-  userId: String
+  userId: Int!
 }
